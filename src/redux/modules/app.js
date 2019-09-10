@@ -3,7 +3,7 @@ const initialState = {
 }
 
 export const types = {
-  CLEAR_ERROR: "APP/CLEAR_ERROR"
+  CLEAR_ERROR: 'APP/CLEAR_ERROR'
 }
 
 //action creators
