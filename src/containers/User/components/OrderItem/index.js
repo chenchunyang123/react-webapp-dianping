@@ -2,8 +2,64 @@ import React, { Component } from 'react';
 import './style.css';
 
 export class OrderItem extends Component {
+
+    // 删除订单
+    handleRemove = () => {
+        this.props.onRemove();
+    }
+
+    // 改变评价
+    handleCommentChange = e => {
+        this.props.onCommentChange(e.target.value);
+    }
+
+    // 评价按钮点击事件
+    handleComment = () => {
+        const { data: { id }, onComment } = this.props;
+        onComment(id);
+    }
+
+    // 渲染订单评价区域的dom
+    renderEditArea = () => {
+        return (
+            <div className='orderItem__commentContainer'>
+                <textarea 
+                    className='orderItem__comment' 
+                    value={this.props.comment}
+                    onChange={this.handleCommentChange} 
+                />
+                {
+                    this.renderStars()
+                }
+                <button className='orderItem__commentBtn' onClick={this.props.onSubmitComment}>提交</button>
+                <button className='orderItem__commentBtn' onClick={this.props.onCancelComment}>取消</button>
+            </div>
+        )
+    }
+
+    // 渲染星星
+    renderStars = () => {
+        const { stars } = this.props;
+        return (
+            <div>
+                {
+                    [1,2,3,4,5].map((item, idx) => {
+                        const lightClass = stars >= item ? 'orderItem__star--light' : '';
+                        return (
+                            <span 
+                                className={'orderItem__star ' + lightClass} 
+                                key={idx}
+                                onClick={this.props.onStarsChange.bind(this, item)}
+                            >★</span>
+                        )
+                    })
+                }
+            </div>
+        )
+    }
+
     render() {
-        const { data: { title, statusText, orderPicUrl, channel, text, type } } = this.props;
+        const { data: { title, statusText, orderPicUrl, channel, text, type, commentId }, isCommenting } = this.props;
         return (
             <div className='orderItem'>
                 <div className='orderItem__title'>
@@ -23,13 +79,18 @@ export class OrderItem extends Component {
                     <div className='orderItem__type'>{channel}</div>
                     <div>
                         {
-                            type === 1 ? (
-                                <div className='orderItem__btn'>评价</div>
+                            type === 1 && !commentId ? (
+                                <div className='orderItem__btn' onClick={this.handleComment}>评价</div>
                             ) : null
                         }
-                        <div className='orderItem__btn'>删除</div>
+                        <div className='orderItem__btn' onClick={this.handleRemove}>删除</div>
                     </div>
                 </div>
+                {
+                    isCommenting ? 
+                    this.renderEditArea() :
+                    null
+                }
             </div>
         );
     }
